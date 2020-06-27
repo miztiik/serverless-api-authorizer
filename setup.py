@@ -9,7 +9,7 @@ setuptools.setup(
     name="serverless_api_authorizer",
     version="0.0.1",
 
-    description="An empty CDK Python app",
+    description="serverless api authorizer",
     long_description=long_description,
     long_description_content_type="text/markdown",
 
@@ -19,7 +19,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="serverless_api_authorizer"),
 
     install_requires=[
-        "aws-cdk.core==1.42.0",
+        "aws-cdk.core==1.47",
     ],
 
     python_requires=">=3.6",
