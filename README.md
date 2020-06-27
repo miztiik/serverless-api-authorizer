@@ -2,8 +2,7 @@
 
 Authentication and Authorization are tough problem almost. Doing it right is not easy. You need to balance usability and security. When you are building serverless application, like an API, you would want your APIs to be accessible by authorized users.
 
-Let us try and understand this with an example. Our startup `Miztiik Corp` is a content publisher. Their platform leverage's serverless components like AWS Lambda & published their endpoints using AWS API Gateway. They want to authorize all access to their APIs serving premium content. They have adopted `OAuth` for the authorization as that gives them the flexibility to integrate with multiple
-identity providers. The authorization is handled AWS Cognito using OAuth.
+Let us try and understand this with an example. Our startup `Miztiik Corp` is a content publisher. Their platform leverage's serverless components like AWS Lambda & published their endpoints using AWS API Gateway. They want to authorize all access to their APIs serving premium content. They have adopted `OAuth` for the authorization as that gives them the flexibility to integrate with multiple identity providers. The authorization is handled AWS Cognito using OAuth.
 
 The appropriate authorization flow for `Machine-To-Machine` or `API-To-API` communication is called `client credentials` and the process is fairly straightforward,
 
@@ -12,9 +11,9 @@ The appropriate authorization flow for `Machine-To-Machine` or `API-To-API` comm
 1. If the credentials are valid and the scopes can be granted, Cognito returns an Access Token to the machine
 1. The machine can use that Access Token to Authenticate itself against the API-Gateway or an Application Load Balancer
 
-`Scopes` are technically part of authorization. A scope more or less is a label that describes a capability such as **`VIEW_PROFILE`** or **`DELETE_MESSAGE`**. You can create as many scopes as you like, but without further processing they’re useless.
+`Scopes` are technically part of authorization. A scope more or less is a label that describes a capability such as **`READ_CONTENT`** or **`WRITE_CONTENT`**. You can create as many scopes as you like, but without further processing they are useless.
 
-From the perspective of an _App_ you get information about which scopes the current user has been granted and you yourself are responsible for implementing authorization measures based on that. In this demo, we are going to see, How to securing your AWS API Gateway endpoints using Cognito User Pools.
+From the perspective of an _App_ you get information about which scopes the current request has been granted and you as the app owner is responsible for implementing authorization measures based on that.
 
 ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_api_authorization_with_cognito_oauth2_architecture.png)
 
@@ -36,15 +35,13 @@ In this article, we will build the above architecture. using Cloudformation gene
    - Get the application code
 
      ```bash
-     git clone https://github.com/miztiik/cloudwatch-embedded-metric.git
-     cd cloudwatch-embedded-metric
+     git clone https://github.com/miztiik/serverless-api-authorizer.git
+     cd serverless-api-authorizer
      ```
 
 1. ## 🚀 Prepare the dev environment to run AWS CDK
 
-   The cdk stack provided in the repo will create the following resources,
-
-   - API GW to front end Application running inside Lambda
+   We will cdk to be installed to make our deployments easier. Lets go ahead and install the necessary components.
 
    ```bash
    # If you DONT have cdk installed
