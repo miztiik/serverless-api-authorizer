@@ -39,7 +39,7 @@ class ApiConsumersStack(core.Stack):
             timeout=core.Duration.seconds(3),
             reserved_concurrent_executions=1,
             environment={
-                "LOG_LEVEL": "DEBUG",
+                "LOG_LEVEL": "INFO",
                 "Environment": "Production",
                 "USER_POOL_SECRETS_ARN": unicorn_user_pool_secrets_arn,
                 "PREMIUM_CONTENT_API_URL": premium_content_api_url,
@@ -111,12 +111,12 @@ class ApiConsumersStack(core.Stack):
                                   description="Use a browser to access this url"
                                   )
         output_2 = core.CfnOutput(self,
-                                  "GetAuthorizedUrl",
+                                  "AuthorizedReadUrl",
                                   value=f"{get_authorized_request.url}",
                                   description="Use a browser to access this url"
                                   )
         output_2 = core.CfnOutput(self,
-                                  "PostAuthorizedUrl",
+                                  "AuthorizedWriteUrl",
                                   value=f"{post_authorized_request.url}",
                                   description="Use a browser to access this url"
                                   )
