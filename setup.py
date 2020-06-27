@@ -15,8 +15,8 @@ setuptools.setup(
 
     author="author",
 
-    package_dir={"": "serverless_api_authorizer"},
-    packages=setuptools.find_packages(where="serverless_api_authorizer"),
+    package_dir={"": "premium_api"},
+    packages=setuptools.find_packages(where="premium_api"),
 
     install_requires=[
         "aws-cdk.core==1.47",
