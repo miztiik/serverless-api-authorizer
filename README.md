@@ -2,11 +2,11 @@
 
 Authentication and Authorization are tough problem almost. Doing it right is not easy. You need to balance usability and security. When you are building serverless application, like an API, you would want your APIs to be accessible by authorized users.
 
-Let us try and understand this with an example. Our startup `Miztiik Corp` is a content publisher. Their platform leverage's serverless components like AWS Lambda & published their endpoints using AWS API Gateway. They want to authorize all access to their APIs serving premium content. They have adopted `OAuth` for the authorization as that gives them the flexibility to integrate with multiple identity providers. The authorization is handled AWS Cognito using OAuth.
+Let us try and understand this with an example. Our start-up `Miztiik Corp` is a content publisher. Their platform leverage's serverless components like AWS Lambda & published their endpoints using AWS API Gateway. They want to authorize all access to their APIs serving premium content. They have adopted `OAuth` for the authorization as that gives them the flexibility to integrate with multiple identity providers. The authorization is handled AWS Cognito using OAuth.
 
-The appropriate authorization flow for `Machine-To-Machine` or `API-To-API` communication is called `client credentials` and the process is fairly straightforward,
+The appropriate authorization flow for `Machine-To-Machine` or `API-To-API` communication is called _OAuth2 Client Credentials_, there is no user, or identity associated with the access request. The calling service obtains an access token, and the target service asserts that token to be valid before granting access to the protected data. The process is fairly straightforward,
 
-1. The machine (i.e. script/Lambda/Requestor) authenticates itself against a Cognito Endpoint with a list of desired scopes
+1. The machine (i.e. script/Lambda/Requester) authenticates itself against a Cognito Endpoint with a list of desired scopes
 1. Cognito verifies the credentials and checks if the machine is allowed to get these scopes
 1. If the credentials are valid and the scopes can be granted, Cognito returns an Access Token to the machine
 1. The machine can use that Access Token to Authenticate itself against the API-Gateway or an Application Load Balancer
@@ -74,10 +74,12 @@ In this article, we will build the above architecture. using Cloudformation gene
    Let us walk through each of the stacks,
 
    - **Stack: cognito-identity-provider**
+     In this scenario, Cognito’s User Pool is merely a placeholder, as we will have no users. The only user will be the app client.
      ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_authorization_with_cognito_oauth2_identity_provider.png)
      This stack creates the following resources,
 
      - AWS Cognito Identity Pool to store identities
+     - Cognito domain - to host the OAuth2 endpoint, `/oauth2/token`
      - An app client. Our `content consumers` will be using this app client to access premium content
      - Resource Server with custom scopes for `read` and `write`
      - We will be using the `client_credentials` OAuth flow, as we our scenario fits the `machine-to-machine` communication
@@ -140,9 +142,11 @@ In this article, we will build the above architecture. using Cloudformation gene
 
 1. ## 🔬 Testing the solution
 
-   The _Outputs_ section of the Clouformation template/service has the required information.
+   The _Outputs_ section of the `content-consumers-stack` stack has the required information on the urls
 
-   - For the `UnauthorizedUrl` you should see an response similar to this,
+   - Access the `UnauthorizedUrl` in your browser. This will trigger an request to the `premium_api` without any authorization. This request is rejected by the API Gateway and you get an _unauthorized_ message as response.
+
+   Expected Output,
 
    ```json
    {
@@ -150,7 +154,14 @@ In this article, we will build the above architecture. using Cloudformation gene
    }
    ```
 
-   - For the `AuthorizedReadUrl` you should see an response similar to this,
+   - When you access the `AuthorizedReadUrl`, The following happens,
+     - The consumer(lambda) retrieves the `app secrets` from AWS Secrets Manager
+     - Send an `POST` request to cognito with secrets. Cognito validates the `app id`, `app secret` and generates a `auth token` for the given scope (`read` in this case)
+     - With this `auth token` make an `GET` request to `premium api`
+     - API Gateway validates the `auth token` and on successful validation invokes the `premium content lambda`
+     - Return the response back to requester.
+
+   Expected Output,
 
    ```json
    {
@@ -158,7 +169,14 @@ In this article, we will build the above architecture. using Cloudformation gene
    }
    ```
 
-   - For the `AuthorizedWriteUrl` you should see an response similar to this,
+   - When you access the `AuthorizedWriteUrl`, The following happens,
+     - The consumer(lambda) retrieves the `app secrets` from AWS Secrets Manager
+     - Send an `POST` request to cognito with secrets. Cognito validates the `app id`, `app secret` and generates a `auth token` for the given scope (`write` in this case)
+     - With this `auth token` make an `POST` request to `premium api`
+     - API Gateway validates the `auth token` and on successful validation invokes the `premium content lambda`
+     - Return the response back to requester.
+
+   Expected Output,
 
    ```json
    {
@@ -210,6 +228,10 @@ Thank you for your interest in contributing to our project. Whether it's a bug r
 
 1. [Allow users to invoke API Gateway REST API/Lambda using the execution role from an Amazon Cognito user pool group][3]
 
+1. [Server to Server Auth with Amazon Cognito][4]
+
+1. [AWS API Gateway - using Access Token with Cognito User Pool authorizer?][5]
+
 ### 🏷️ Metadata
 
 **Level**: 300
@@ -217,6 +239,8 @@ Thank you for your interest in contributing to our project. Whether it's a bug r
 [1]: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html
 [2]: https://aws.amazon.com/premiumsupport/knowledge-center/cognito-custom-scopes-api-gateway/
 [3]: https://aws.amazon.com/premiumsupport/knowledge-center/cognito-user-pool-group/
+[4]: https://lobster1234.github.io/2018/05/31/server-to-server-auth-with-amazon-cognito/
+[5]: https://stackoverflow.com/questions/50404761/aws-api-gateway-using-access-token-with-cognito-user-pool-authorizer/50617345#
 [100]: https://www.udemy.com/course/aws-cloud-security/?referralCode=B7F1B6C78B45ADAF77A9
 [101]: https://www.udemy.com/course/aws-cloud-security-proactive-way/?referralCode=71DC542AD4481309A441
 [102]: https://www.udemy.com/course/aws-cloud-development-kit-from-beginner-to-professional/?referralCode=E15D7FB64E417C547579
