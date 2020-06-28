@@ -92,7 +92,7 @@ In this article, we will build the above architecture. using Cloudformation gene
      ```
 
    - **Stack: premium-content-provider**
-     ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_authorization_premium_api_consumers.png)
+     ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_authorization_premium_content_provider.png)
      This stack creates the following resources,
 
      - A Lambda function that generates content dynamically. Supports
@@ -111,7 +111,7 @@ In this article, we will build the above architecture. using Cloudformation gene
 
    - **Stack: content-consumers-stack**
 
-   ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_authorization_premium_api_consumers.png)
+   ![Miztiik Serverless API Authorization](images/miztiik_machine_to_machine_authorization_premium_api_consumers_01.png)
 
    Our consumers will have two different flows
 
