@@ -210,7 +210,7 @@ In this article, we will build the above architecture. using Cloudformation gene
 
 ## 📌 Who is using this
 
-This repository to teaches cloudformation to new developers, Solution Architects & Ops Engineers in AWS. Based on that knowledge these Udemy [course #1][103], [course #2][102] helps you build complete architecture in AWS.
+This repository teaches developers, Solution Architects & Ops Engineers how to build complete architecture in AWS. Based on that knowledge these Udemy [course #1][103], [course #2][102] have been created to enhance your skills.
 
 ### 💡 Help/Suggestions or 🐛 Bugs
 
